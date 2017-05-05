@@ -28,7 +28,7 @@ app.use(require('body-parser').urlencoded({
 app.use(require('body-parser').json());
 app.use(cors())
 
-// passport.use(new Strategy(controller.signin));
+passport.use(new Strategy(controller.signin));
 
 app.use(passport.initialize());
 
