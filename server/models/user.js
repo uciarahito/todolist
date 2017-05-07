@@ -2,10 +2,7 @@ const mongoose = require('mongoose')
 let Schema = mongoose.Schema
 
 let userSchema = new Schema({
-    name: {
-        type: String,
-        required: true
-    },
+    uuid: String,
     username: {
         type: String,
         required: true
@@ -14,13 +11,15 @@ let userSchema = new Schema({
         type: String,
         required: true
     },
-    email: {
-        type: String,
-        required: true
-    },
+    email: String,
+    token: String,
+    todo: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Todo'
+    }],
     role: {
         type: String,
-        required: true
+        default: "user"
     }
 }) // userSchema
 

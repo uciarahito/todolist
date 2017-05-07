@@ -2,66 +2,79 @@ const mongo = require('mongodb')
 const User = require('../models/user')
 const passwordHash = require('password-hash')
 const jwt = require('jsonwebtoken')
+const Helpers = require('../helpers/decodeToken')
 var methods = {}
 require('dotenv').config();
 
 methods.insertOne = (req, res, next) => {
     let pwdHash = req.body.password
-    User.create({
-            name: req.body.name,
-            username: req.body.username,
-            password: passwordHash.generate(pwdHash),
-            email: req.body.email,
-            role: req.body.role
-        })
-        .then(record => {
-            res.json(record)
-        })
-        .catch(err => {
-            res.json({
-                err,
-                message: 'Error waktu createOne'
-            })
-        })
+    let user = new User({
+        username: req.body.username,
+        password: passwordHash.generate(pwdHash),
+        email: req.body.email
+    })
+    user.save(function(err, record) {
+        if (err) return console.error(err);
+        res.json(record)
+    });
 } // insertOne
 
-methods.getAll = (req, res, next) => {
-    User.find()
-        .then(records => {
-            res.json(records)
-        })
-        .catch(err => {
-            res.json({
-                err,
-                message: 'Error waktu getAll Book'
-            })
+methods.getAll = (req, res) => {
+    User.find({})
+        .populate('todo') // populate utk mendapatkan informasi semua property dicollection user
+        .exec((err, records) => {
+            if (err) {
+                res.json({
+                    err
+                })
+            } else {
+                // console.log(records)
+                res.json(records)
+            }
         })
 } //getAll
 
-methods.getById = (req, res, next) => {
-    User.findById(req.params.id, (err, record) => {
-        if (err) {
-            res.json({
-                err,
-                message: 'Error waktu getById'
-            })
-        } else {
-            res.json(record)
-        }
-    })
-} //getById
+methods.getById = function(req, res) {
+    User.findById(req.params.id)
+        .populate('todo')
+        .exec((err, record) => {
+            if (err)
+                res.send(err)
+            else
+                res.json(record)
+        })
+} // findById ok
 
-methods.getByUsername = (req, res, next) => {
+// methods.getTodoComplete = function(req, res) {
+//     let decoded = Helpers.decodeToken(req.headers.token)
+//     let id = decoded._id
+//     // console.log('cekk:' + id);
+//     User.findById(id)
+//         .populate('todo')
+//         .exec((err, record) => {
+//             if (err) {
+//                 res.send(err)
+//             } else {
+//                 let data = record.todo
+//                 data.filter(tdComplete => {
+//                     if (tdComplete.status) {
+//                         res.json(record)
+//                     }
+//                 })
+//                 // console.log(temp);
+//                 // console.log(record.todo[0]);
+//             }
+//         })
+// } // getById
+
+methods.getByUsername = (req, res) => {
     User.findOne({
             username: req.params.username
         })
         .select('username')
         .exec((err, record) => {
             if (err) {
-                res.json({
-                    err,
-                    message: 'Error waktu getByUsername'
-                })
+                res.send(err)
             } else {
                 res.json(record)
             }
@@ -76,7 +89,6 @@ methods.updateById = (req, res, next) => {
                     "_id": new mongo.ObjectID(req.params.id)
                 }, {
                     $set: {
-                        "name": req.body.name || record.name,
                         "username": req.body.username || record.username,
                         "password": passwordHash.generate(pwdHash) || record.password,
                         "email": req.body.email || record.email,
@@ -118,7 +130,6 @@ methods.deleteById = (req, res, next) => {
 methods.signup = (req, res, next) => {
     let pwdHash = req.body.password
     User.create({
-            name: req.body.name,
             username: req.body.username,
             password: passwordHash.generate(pwdHash),
             email: req.body.email,

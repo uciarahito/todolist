@@ -1,6 +1,7 @@
 'use strict';
 const router = require('express').Router()
 const userController = require('../controllers/userController')
+const todoController = require('../controllers/todoController')
 const jwtHelpers = require('../helpers/check_token')
 const passport = require('passport')
 
@@ -20,6 +21,14 @@ router.post('/api/signin', passport.authenticate('local', {
     res.send(user)
 })
 
+// router.get('/api/todo/complete', todoController.getTodoComplete)
+
+// NOTE: TODOS
+router.post('/api/todos', todoController.insertOne)
+router.put('/api/todo/:id', todoController.updateById)
+router.get('/api/todo/:id', todoController.getById)
+router.get('/api/todos', todoController.getAll)
+router.delete('/api/todo/:id', todoController.deleteById)
 
 router.get('/', (req, res) => {
     res.send('Haiiiiiii')
