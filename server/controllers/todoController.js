@@ -109,6 +109,34 @@ methods.updateById = (req, res, next) => {
         })
 } //updateById
 
+methods.completeTodo = (req, res, next) => {
+    // let cekStatus = req.body.status === undefined ? false : true
+    Todo.findById(req.params.id, (err, record) => {
+        if (err) {
+            res.json({
+                err,
+                message: 'Error waktu deleteById'
+            })
+        }
+        record.updated = new Date
+        if (record.status) {
+            record.status = false
+        } else {
+            record.status = true
+        }
+
+        record.save((err, record) => {
+            if (err) {
+                res.json({
+                    err,
+                    message: 'Error waktu deleteById'
+                })
+            }
+            res.send(record)
+        })
+    })
+} //completeTodo
+
 methods.deleteById = (req, res, next) => {
     Todo.findByIdAndRemove(req.params.id)
         .exec((err, record) => {

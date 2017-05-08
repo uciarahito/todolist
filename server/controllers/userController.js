@@ -45,27 +45,20 @@ methods.getById = function(req, res) {
         })
 } // findById ok
 
-// methods.getTodoComplete = function(req, res) {
-//     let decoded = Helpers.decodeToken(req.headers.token)
-//     let id = decoded._id
-//     // console.log('cekk:' + id);
-//     User.findById(id)
-//         .populate('todo')
-//         .exec((err, record) => {
-//             if (err) {
-//                 res.send(err)
-//             } else {
-//                 let data = record.todo
-//                 data.filter(tdComplete => {
-//                     if (tdComplete.status) {
-//                         res.json(record)
-//                     }
-//                 })
-//                 // console.log(temp);
-//                 // console.log(record.todo[0]);
-//             }
-//         })
-// } // getById
+methods.getTodoByUserLogin = function(req, res) {
+    let decoded = Helpers.decodeToken(req.headers.token)
+    let id = decoded._id
+    // console.log('cekk:' + id);
+    User.findById(id)
+        .populate('todo')
+        .exec((err, record) => {
+            if (err) {
+                res.send(err)
+            } else {
+                res.json(record)
+            }
+        })
+} // getTodoByUserLogin
 
 methods.getByUsername = (req, res) => {
     User.findOne({

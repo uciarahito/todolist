@@ -9,6 +9,7 @@ const passport = require('passport')
 router.post('/api/users', jwtHelpers.check_token_admin, userController.insertOne) // admin only
 router.get('/api/users', jwtHelpers.check_token_admin, userController.getAll) // admin only
 router.get('/api/user/:id', jwtHelpers.check_token_both, userController.getById) // admin and user
+router.get('/api/todo/login', userController.getTodoByUserLogin)
 router.get('/api/user/:username', jwtHelpers.check_token_both, userController.getByUsername) // admin and user
 router.put('/api/user/:id', jwtHelpers.check_token_both, userController.updateById) // admin and user
 router.delete('/api/user/:id', jwtHelpers.check_token_both, userController.deleteById) // admin and user
@@ -21,12 +22,12 @@ router.post('/api/signin', passport.authenticate('local', {
     res.send(user)
 })
 
-// router.get('/api/todo/complete', todoController.getTodoComplete)
 
 // NOTE: TODOS
 router.post('/api/todos', todoController.insertOne)
 router.put('/api/todo/:id', todoController.updateById)
 router.get('/api/todo/:id', todoController.getById)
+router.put('/api/todo/complete/:id', todoController.completeTodo)
 router.get('/api/todos', todoController.getAll)
 router.delete('/api/todo/:id', todoController.deleteById)
 
