@@ -1,97 +1,424 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-<title>Facebook Login JavaScript Example</title>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Todo List</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/css/login.css" rel="stylesheet">
+
+    <!-- Vue js -->
+    <script src="https://unpkg.com/vue"></script>
+
+    <!-- Axios -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.16.1/axios.min.js"></script>
+
 </head>
+
 <body>
-<script>
-  // This is called with the results from from FB.getLoginStatus().
-  function statusChangeCallback(response) {
-    console.log('statusChangeCallback');
-    console.log(response);
-    // The response object is returned with a status field that lets the
-    // app know the current login status of the person.
-    // Full docs on the response object can be found in the documentation
-    // for FB.getLoginStatus().
-    if (response.status === 'connected') {
-      // Logged into your app and Facebook.
-      testAPI();
-    } else {
-      // The person is not logged into your app or we are unable to tell.
-      document.getElementById('status').innerHTML = 'Please log ' +
-        'into this app.';
-    }
-  }
+    <div id="app">
+        <!-- Navigation -->
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <img src="./img/todo2.png" alt="Logo Todo" height="50px" width="50px">
+                </div>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="#">Home</a>
+                        </li>
+                        <li>
+                            <a href="#">About</a>
+                        </li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#" v-on:click="onLogout"><span class="glyphicon glyphicon-user"> {{logInOut}}</span></a></li>
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container -->
+        </nav>
 
-  // This function is called when someone finishes with the Login
-  // Button.  See the onlogin handler attached to it in the sample
-  // code below.
-  function checkLoginState() {
-    FB.getLoginStatus(function(response) {
-      statusChangeCallback(response);
-    });
-  }
+        <div class="container">
+            <div class="col-sm-10 col-sm-offset-1" style="padding-top: 80px;">
+                <br>
+                <div class="panel panel-success" style="border: none;">
+                    <div class="col-sm-3 col-lg-3 col-md-3">
+                        <div class="thumbnail" style="text-align: center;">
+                            <a href="#">
+                                <div class="containImage">
+                                    <img src="./img/todo3.png" alt="Add Task" class="image" width="70px" height="70px">
+                                </div>
+                            </a>
+                            <div class="caption">
+                                <h4>Add New Task</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 col-lg-3 col-md-3">
+                        <div class="thumbnail" style="text-align: center;">
+                            <a href="#">
+                                <div class="containImage">
+                                    <img src="./img/stats.svg" alt="Stats" class="image" width="70px" height="70px">
+                                </div>
+                            </a>
+                            <div class="caption">
+                                <h4>Task Stats</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 col-lg-3 col-md-3">
+                        <div class="thumbnail" style="text-align: center;">
+                            <a href="#">
+                                <div class="containImage">
+                                    <img src="./img/analytics.svg" alt="Bar" class="image" width="70px" height="70px">
+                                </div>
+                            </a>
+                            <div class="caption">
+                                <h4>Task Progress Bar</h4>
+                            </div>
+                        </div>
+                    </div>
 
-  window.fbAsyncInit = function() {
-  FB.init({
-    appId      : '1488768431197061',
-    cookie     : true,  // enable cookies to allow the server to access
-                        // the session
-    xfbml      : true,  // parse social plugins on this page
-    version    : 'v2.9' // use graph api version 2.8
-  });
+                </div>
+                <!-- admin panel -->
 
-  // Now that we've initialized the JavaScript SDK, we call
-  // FB.getLoginStatus().  This function gets the state of the
-  // person visiting this page and can return one of three states to
-  // the callback you provide.  They can be:
-  //
-  // 1. Logged into your app ('connected')
-  // 2. Logged into Facebook, but not your app ('not_authorized')
-  // 3. Not logged into Facebook and can't tell if they are logged into
-  //    your app or not.
-  //
-  // These three cases are handled in the callback function.
+                <br>
+                <div class="panel panel-success" style="border: none;">
+                    <div class="col-sm-8 col-lg-8 col-md-8">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <h3 class="text-center">Add New Task</h3>
+                            </div>
 
-  FB.getLoginStatus(function(response) {
-    statusChangeCallback(response);
-  });
+                            <div class="panel-body">
+                                <form v-on:submit="addTodo">
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" v-model="form.title" placeholder="title">
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control" v-model="form.description" placeholder="description">
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <input v-model="form.date_todo" type="date" class="form-control">
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <input v-model="form.time_todo" type="time" class="form-control">
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <input type="submit" class="btn btn-primary btn-block" value="Add">
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-  };
+                <div class="panel panel-success" style="border: none;">
+                    <div class="col-sm-7 col-lg-7 col-md-7">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <h3 class="text-center">Tasks Statistics</h3>
+                            </div>
 
-  // Load the SDK asynchronously
-  (function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
-    js.src = "//connect.facebook.net/en_US/sdk.js";
-    fjs.parentNode.insertBefore(js, fjs);
-  }(document, 'script', 'facebook-jssdk'));
+                            <div class="panel-body">
+                                <div class="col-sm-6">
+                                    <p v-on:mouseover="changeTotalTasks">Total Tasks: {{ todos.length }}</p>
+                                    <p v-on:mouseover="changeLeftToDo">Tasks Left To Do: {{ leftToDo }}</p>
+                                    <p v-on:mouseover="changeCheckMarked">Check Marked Tasks: {{ checkMarkedTasks }}</p>
+                                </div>
+                                <div class="col-sm-6">
+                                    <h3>{{ displayedTasksStatView }}</h3>
+                                    <h3 style="padding: 10px;background: grey;text-align: center;" v-bind:class="manageable" class="green">{{ leftToDo < 10 ? 'Manageable' : 'Tasks Overload' }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-5 col-lg-5 col-md-5">
+                        <div class="panel panel-success">
+                            <div class="panel-heading">
+                                <h3 class="text-center">Percentage Tasks</h3>
+                            </div>
 
-  // Here we run a very simple test of the Graph API after login is
-  // successful.  See statusChangeCallback() for when this call is made.
-  function testAPI() {
-    console.log('Welcome!  Fetching your information.... ');
-    FB.api('/me', function(response) {
-      console.log('Successful login for: ' + response.name);
-      document.getElementById('status').innerHTML =
-        'Thanks for logging in, ' + response.name + '!';
-    });
-  }
-</script>
+                            <div class="panel-body">
+                                <div class="col-sm-8 col-sm-offset-2">
+                                    <div class="completionProgressGreyBar">
+                                        <div class="completionProgressGreenBar text-center" :style="{ width: percentageOfTasksCompleted + '%' }">{{ Math.round(percentageOfTasksCompleted) }}%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tasks Statistics -->
 
-<!--
-  Below we include the Login Button social plugin. This button uses
-  the JavaScript SDK to present a graphical Login button that triggers
-  the FB.login() function when clicked.
--->
+                <div class="row">
 
-<fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-</fb:login-button>
+                    <div class="tab-content"><br>
+                        <div class="tab-pane fade in active">
+                            <table class="table">
+                                <thead>
+                                    <th style="text-align: center;">Mark</th>
+                                    <th style="text-align: center;">Task Name</th>
+                                    <th style="text-align: center;">Description</th>
+                                    <th style="text-align: center;">Action</th>
+                                </thead>
 
-<div id="status">
-</div>
+                                <tbody v-for="todo of todos" v-if="todos.length > 0">
+                                    <tr v-if="todo.status == true">
+                                        <td>
+                                            <a href="#" v-on:click="completeTodo(todo._id)" v-if="todo.status == true">
+                                                <span class="glyphicon glyphicon-ok"></span>
+                                            </a>
+                                            <a href="#" v-on:click="completeTodo(todo._id)" v-else>
+                                                <span class="glyphicon glyphicon-remove"></span>
+                                            </a>
+                                        </td>
+                                        <td><span :class="{ taskDone: todo.status }">{{todo.title}}</span></td>
+                                        <td><span :class="{ taskDone: todo.status }">{{todo.description}}</span></td>
+                                        <td class="col-sm-2 col-lg-2 col-md-2"><img class="col-sm-1 col-lg-1 col-md-1" v-on:click="deleteTodo(todo._id)" src="./img/edit.svg" alt="Edit" width="30px" height="30px">
+                                          <img class="col-sm-1 col-lg-1 col-md-1" v-on:click="deleteTodo(todo._id)" src="./img/delete.svg" alt="Delete" width="30px" height="30px">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <br>
+                            <table class="table">
+                                <thead>
+                                    <th style="text-align: center;">Mark</th>
+                                    <th style="text-align: center;">Task Name</th>
+                                    <th style="text-align: center;">Description</th>
+                                    <th style="text-align: center;">Action</th>
+                                </thead>
 
+                                <tbody v-for="todo of todos" v-if="todos.length > 0">
+                                    <tr v-if="todo.status == false">
+                                        <td>
+                                            <a href="#" v-on:click="completeTodo(todo._id)" v-if="todo.status == true">
+                                                <span class="glyphicon glyphicon-ok"></span>
+                                            </a>
+                                            <a href="#" v-on:click="completeTodo(todo._id)" v-else>
+                                                <span class="glyphicon glyphicon-remove"></span>
+                                            </a>
+                                        </td>
+                                        <td><span :class="{ taskDone: todo.status }">{{todo.title}}</span></td>
+                                        <td><span :class="{ taskDone: todo.status }">{{todo.description}}</span></td>
+                                        <td><button class="btn btn-danger btn-block" v-on:click="deleteTodo(todo._id)">Delete</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- vue js -->
+    <!-- <script src="./js/vue_script.js"></script> -->
+    <!-- <script src="./js/vue.js"></script> -->
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                message: 'Hello Vue!',
+                username: '',
+                password: '',
+                appTitle: 'Todo Task List App',
+                displayedTasksStat: 'totalTasks',
+                deletedTasks: 0,
+                todos: [],
+                form: {
+                    title: '',
+                    description: '',
+                    date_todo: '',
+                    time_todo: '',
+                    due_date: ''
+                },
+                cekStatus: false,
+                logInOut: ''
+            },
+            methods: {
+                loginPage: () => {
+                    window.location.href = 'login.html'
+                },
+                onLogout() {
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html'
+                },
+                changeAppTitle: function(event) {
+                    this.appTitle = event.target.value;
+                },
+                addTodo() {
+                    let self = this
+                    self.form.due_date = self.form.date_todo + 'T' + self.form.time_todo +'Z'
+                    axios.post(`http://localhost:3000/api/todos`,
+                            {
+                              title: self.form.title,
+                              description: self.form.description,
+                              due_date: self.form.due_date
+                            }, {
+                                headers: {
+                                    token: localStorage.getItem('token')
+                                }
+                            }
+                        )
+                        .then(response => {
+                            if (response.data.hasOwnProperty('error')) {
+                                self.message = response.data.error.message
+                            } else {
+                                self.message = response.data.message
+                                self.form.title = ''
+                                self.form.description = ''
+                                self.form.due_date = ''
+                                window.location.href = 'index.html'
+                                // console.log(response.data)
+                                // console.log('-- cek : ---'+self.form.due_date);
+                            }
+                        })
+                        .catch(error => {
+                            alert('error')
+                            console.log(error)
+                        })
+                },
+                deleteTodo(todo) {
+                    let self = this
+                    axios.delete(`http://localhost:3000/api/todo/${todo}`)
+                        .then(response => {
+                            if (response.data.hasOwnProperty('error')) {
+                                self.message = response.data.error.message
+                            } else {
+                                self.message = response.data.message
+                                self.deletedTasks++;
+                                window.location.href = 'index.html'
+                                console.log(response.data)
+                            }
+                        })
+                        .catch(error => {
+                            alert(`Process delete error: ${error}`)
+                        })
+                },
+                completeTodo(todo) {
+                    axios.put(`http://localhost:3000/api/todo/complete/${todo}`, {
+                            headers: {
+                                token: localStorage.getItem('token')
+                            }
+                        })
+                        .then(response => {
+                            // console.log(response);
+                            if (response.data.hasOwnProperty('error')) {
+                                self.message = response.data.error.message
+                            } else {
+                                self.message = response.data.message
+                                window.location.href = 'index.html'
+                                // console.log(response.data)
+                            }
+                        })
+                        .catch(error => {
+                            alert(`Process update status error: ${error}`)
+                        })
+                },
+                changeTotalTasks: function() {
+                    this.displayedTasksStat = 'totalTasks';
+                },
+                changeLeftToDo: function() {
+                    this.displayedTasksStat = 'leftToDo';
+                },
+                changeCheckMarked: function() {
+                    this.displayedTasksStat = 'checkMarked';
+                },
+                changeDeleted: function() {
+                    this.displayedTasksStat = 'deletedTasks';
+                }
+            },
+            created: function() {
+                if (localStorage.getItem('token') != null) {
+                    this.logInOut = 'Logout'
+                } else {
+                    this.logInOut = 'SignIn'
+                }
+                axios.get(`http://localhost:3000/api/todo/login`, {
+                        headers: {
+                            token: localStorage.getItem('token')
+                        }
+                    })
+                    .then(response => {
+                        let dataTodo = response.data.todo
+                        this.todos = dataTodo
+                        console.log('--------');
+                        // console.log(dataTodo);
+                    })
+                    .catch(error => {
+                        alert('Login first')
+                        console.log(error)
+                        window.location.href = 'login.html'
+                    })
+            },
+            computed: {
+                checkMarkedTasks: function() {
+                    let count = 0;
+                    for (let i = 0; i < this.todos.length; ++i) {
+                        if (this.todos[i].status == true) {
+                            count++;
+                        }
+                    }
+                    return count;
+                },
+                leftToDo: function() {
+                    return this.todos.length - this.checkMarkedTasks;
+                },
+                displayedTasksStatView: function() {
+                    if (this.displayedTasksStat == 'totalTasks') {
+                        return 'Total Tasks: ' + this.todos.length;
+                    } else if (this.displayedTasksStat == 'leftToDo') {
+                        return 'Tasks Left: ' + this.leftToDo;
+                    } else if (this.displayedTasksStat == 'checkMarked') {
+                        return 'Check Marked Tasks: ' + this.checkMarkedTasks;
+                    } else if (this.displayedTasksStat == 'deletedTasks') {
+                        return 'Deleted Tasks: ' + this.deletedTasks;
+                    }
+                },
+                manageable: function() {
+                    if (this.leftToDo < 10) {
+                        return 'green';
+                    } else {
+                        return 'red';
+                    }
+                },
+                percentageOfTasksCompleted: function() {
+                    if (this.todos.length == 0) {
+                        return 0;
+                    } else {
+                        return (this.checkMarkedTasks / this.todos.length) * 100;
+                    }
+                }
+            }
+        })
+    </script>
+
+
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
 </body>
+
 </html>

@@ -16,6 +16,9 @@ let todoSchema = new Schema({
         type: Date,
         default: Date.now
     },
+    due_date: {
+        type: Date
+    },
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User'

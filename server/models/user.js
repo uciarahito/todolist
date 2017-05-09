@@ -20,6 +20,10 @@ let userSchema = new Schema({
     role: {
         type: String,
         default: "user"
+    },
+    phone: {
+        type: String,
+        default: "+6281315853615"
     }
 }) // userSchema
 

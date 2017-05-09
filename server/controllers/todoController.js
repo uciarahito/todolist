@@ -2,19 +2,24 @@ const mongo = require('mongodb')
 const Todo = require('../models/todo')
 const User = require('../models/user')
 const Helpers = require('../helpers/decodeToken')
+const serverSMS = require('../helpers/serverSMS')
 const methods = {}
 
 methods.insertOne = (req, res) => {
     let decoded = Helpers.decodeToken(req.headers.token)
+    let dueDate = req.body.due_date
+    console.log('Semangat');
     // console.log(decoded);
     let cekStatus = req.body.status === undefined ? false : true
     Todo.create({
         user: decoded._id,
         title: req.body.title,
         description: req.body.description,
+        due_date: req.body.due_date,
         status: cekStatus
     }, (err, record) => {
-        // console.log(record);
+        console.log('++++++');
+        // console.log(typeof record);
         if (err)
             res.send(err)
         else {
@@ -28,8 +33,12 @@ methods.insertOne = (req, res) => {
                 .exec((err) => {
                     if (err)
                         res.send(err)
-                    else
+                    else {
+                        // console.log('due date: ' + dueDate);
+                        console.log('test sukses');
+                        serverSMS.sendSMS(record)
                         res.json(record)
+                    }
                 }) // end exec
         }
     })
@@ -87,6 +96,7 @@ methods.updateById = (req, res, next) => {
                         "title": req.body.title || record.title,
                         "description": req.body.description || record.description,
                         "status": req.body.status || record.status,
+                        "due_date": req.body.due_date || record.due_date,
                         "updated": new Date || '',
                         "user": decoded._id
                     }
